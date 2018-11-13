@@ -1,6 +1,8 @@
 package game.objects.ships;
 
 public interface ShipBehavior {
-    char markHit(int position);
+    void markHit(int position);
     boolean checkState();
+    void setRandomCoordinates();
+    void fillBody();
 }
