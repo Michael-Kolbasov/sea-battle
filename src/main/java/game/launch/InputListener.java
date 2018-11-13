@@ -28,13 +28,20 @@ public class InputListener {
         if (map[y][x].getState() == ElementState.SHIP) {
             Ship ship = GameMap.getShip(aiMap, y, x);
             if (ship != null) {
+                boolean isShotAlready = false;
                 Element elementInShip = ship.getElementByCoordinates(y, x);
                 if (elementInShip.getState() != ElementState.INJURED) {
                     ship.markHit(y, x);
                     map[y][x].setSymbol('X');
+                } else {
+                    isShotAlready = true;
                 }
                 if (ship.checkState()) {
-                    System.out.println("Ship has drowned!");
+                    if (!isShotAlready) {
+                        System.out.println("Ship has drowned!");
+                    } else {
+                        System.out.println("Ship has drowned! By the way, you've already shot this cell.");
+                    }
                     Element[] shipBody = ship.getBody();
                     for (Element element : shipBody) {
                         ArrayList<Element> surround = element.getSurround();
@@ -47,7 +54,11 @@ public class InputListener {
                     aiMap.displayEnemyMap();
                     return true;
                 } else {
-                    System.out.println("It's a shot! Ship is injured.");
+                    if (!isShotAlready) {
+                        System.out.println("It's a shot! Ship is injured.");
+                    } else {
+                        System.out.println("It's a shot! Ship is injured. By the way, you've already shot this cell.");
+                    }
                     waitOneSecond();
                     aiMap.displayEnemyMap();
                     return true;

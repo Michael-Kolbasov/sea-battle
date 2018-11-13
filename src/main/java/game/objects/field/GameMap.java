@@ -1,8 +1,10 @@
 package game.objects.field;
+
 import game.objects.ElementState;
 import game.objects.ships.Ship;
 import game.objects.Element;
 import game.objects.ships.ShipFactory;
+
 import java.util.ArrayList;
 
 public class GameMap {
@@ -76,9 +78,7 @@ public class GameMap {
                 if (!(cells[y][x].isCellChecked())) {
                     System.out.print(cells[y][x].getSurrogate() + " ");
                 } else {
-                    /*if (cells[y][x].getState() == ElementState.SHIP) {*/
-                        System.out.print(cells[y][x].getSymbol() + " ");
-                    /*}*/
+                    System.out.print(cells[y][x].getSymbol() + " ");
                 }
                 if (x != 9) {
                     System.out.print("| ");
@@ -160,12 +160,3 @@ public class GameMap {
         }
     }
 }
-
-//TODO: put ships on map first
-    /*public void updateMap() {
-        for (int y = 0; y < HEIGTH; y++) {
-            for (int x = 0; x < WIDTH; x++) {
-
-            }
-        }
-    }*/
