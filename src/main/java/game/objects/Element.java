@@ -6,6 +6,8 @@ public class Element {
     private int y;
     private ElementState state;
     private char symbol;
+    private boolean isCellChecked;
+    private char surrogate = '*';
 
     public Element() {
 
@@ -14,6 +16,41 @@ public class Element {
     public Element(int y, int x) {
         this.y = y;
         this.x = x;
+    }
+
+    @Override
+    public int hashCode() {
+        return x + y;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Element other = (Element) obj;
+        if (getX() != other.getX() || getY() != other.getY()) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isCellChecked() {
+        return isCellChecked;
+    }
+
+    public void setCellChecked(boolean cellChecked) {
+        isCellChecked = cellChecked;
+    }
+
+    public char getSurrogate() {
+        return surrogate;
     }
 
     public boolean checkEmptiness() {

@@ -7,6 +7,10 @@ import java.util.Random;
 public abstract class Ship implements ShipBehavior {
     private static int resetCount = 0;
 
+    public enum Health {
+        HEALTHY, INJURED, DEAD
+    }
+
     private enum Orientation {
         HORIZONTAL, VERTICAL
     }
@@ -14,25 +18,91 @@ public abstract class Ship implements ShipBehavior {
     protected Element[] body;
     protected int length;
     private Orientation orientation;
+    private Health health = Health.HEALTHY;
     private boolean orientationLock;
     private int hitCount;
 
     @Override
-    public void markHit(int position) {
-        body[position].setSymbol('x');
+    public int hashCode() {
+        Element[] elements = getBody();
+        int result = 0;
+        for (int i = 0; i < elements.length; i++) {
+            result += elements[i].hashCode();
+        }
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Ship other = (Ship) obj;
+        Element[] thisElements = getBody();
+        Element[] otherElements = other.getBody();
+        if (thisElements.length != otherElements.length) {
+            return false;
+        }
+        for (int i = 0; i < getBody().length; i++) {
+            if (!thisElements[i].equals(otherElements[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Health getHealth() {
+        return health;
+    }
+
+    public void setHealth(Health health) {
+        this.health = health;
+    }
+
+    public Element getElementByCoordinates(int y, int x) {
+        Element element = new Element(y, x);
+        for (Element elementToFind : getBody()) {
+            if (elementToFind.equals(element)) {
+                return elementToFind;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void markHit(int y, int x) {
+        Element elementToMark = new Element(y, x);
+        Element[] elements = getBody();
+        for (Element element : elements) {
+            if (element.equals(elementToMark)) {
+                element.setSymbol('X');
+                element.setState(ElementState.INJURED);
+            }
+        }
         hitCount++;
+        if (checkState()) {
+            setHealth(Health.DEAD);
+        } else {
+            setHealth(Health.INJURED);
+        }
     }
 
     @Override
     public boolean checkState() {
-        return hitCount == body.length;
+        return hitCount >= body.length;
     }
 
     @Override
     public void fillBody() {
         for (int i = 0; i < body.length; i++) {
             body[i] = new Element();
-            body[i].setSymbol('o');
+            body[i].setSymbol('O');
             body[i].setState(ElementState.SHIP);
         }
     }
@@ -54,7 +124,7 @@ public abstract class Ship implements ShipBehavior {
                     orientationLock = true;
                 }
                 resetCount++;
-                resetCoordinates();
+                this.resetCoordinates();
                 this.setRandomCoordinates();
             } else {
                 for (int i = 0; i < body.length; i++) {
@@ -70,7 +140,7 @@ public abstract class Ship implements ShipBehavior {
                     orientationLock = true;
                 }
                 resetCount++;
-                resetCoordinates();
+                this.resetCoordinates();
                 this.setRandomCoordinates();
             } else {
                 for (int i = 0; i < body.length; i++) {

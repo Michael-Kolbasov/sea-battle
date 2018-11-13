@@ -19,9 +19,27 @@ public class GameMap {
         putShipsRandomly();
     }
 
+    public static Ship getShip(GameMap map, int y, int x) {
+        ArrayList<Ship> ships = map.getShips();
+        Element elementToCheck = new Element(y, x);
+        for (Ship ship : ships) {
+            Element[] elements = ship.getBody();
+            for (Element element : elements) {
+                if (elementToCheck.equals(element)) {
+                    return ship;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Element[][] getCells() {
+        return cells;
+    }
+
     public void displayMap() {
         char coordinateX = 'A';
-        int coordinateY = 1;
+        int coordinateY = 0;
 
         System.out.print("  ");
         for (int x = 0; x < WIDTH; x++) {
@@ -40,6 +58,39 @@ public class GameMap {
             System.out.println();
         }
         System.out.println();
+    }
+
+    public void displayEnemyMap() {
+        char coordinateX = 'A';
+        int coordinateY = 0;
+
+        System.out.print("  ");
+        for (int x = 0; x < WIDTH; x++) {
+            System.out.print(coordinateY++ + "   ");
+        }
+        System.out.println();
+
+        for (int y = 0; y < HEIGTH; y++) {
+            System.out.print(coordinateX++ + " ");
+            for (int x = 0; x < WIDTH; x++) {
+                if (!(cells[y][x].isCellChecked())) {
+                    System.out.print(cells[y][x].getSurrogate() + " ");
+                } else {
+                    /*if (cells[y][x].getState() == ElementState.SHIP) {*/
+                        System.out.print(cells[y][x].getSymbol() + " ");
+                    /*}*/
+                }
+                if (x != 9) {
+                    System.out.print("| ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    public ArrayList<Ship> getShips() {
+        return ships;
     }
 
     private void fillMap() {
@@ -108,8 +159,9 @@ public class GameMap {
             }
         }
     }
+}
 
-    //TODO: put ships on map first
+//TODO: put ships on map first
     /*public void updateMap() {
         for (int y = 0; y < HEIGTH; y++) {
             for (int x = 0; x < WIDTH; x++) {
@@ -117,4 +169,3 @@ public class GameMap {
             }
         }
     }*/
-}

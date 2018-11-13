@@ -1,5 +1,5 @@
 package game.objects;
 
 public enum ElementState {
-    WATER, BORDER, SHIP
+    WATER, BORDER, SHIP, INJURED
 }
