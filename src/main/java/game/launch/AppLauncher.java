@@ -3,22 +3,18 @@ import game.objects.field.GameMap;
 
 public class AppLauncher {
     private GameMap playerMap;
-    private GameMap enemyMap;
+    private GameMap aiMap;
 
     public AppLauncher() {
         playerMap = new GameMap();
-        enemyMap = new GameMap();
+        aiMap = new GameMap();
     }
 
     public void launchRandom() {
-        GameProcess inputListener = new GameProcess(playerMap, enemyMap);
-        Input input = new Input(inputListener);
+        GameProcess gameProcess = new GameProcess(playerMap, aiMap, this);
+        Input input = new Input(gameProcess, this);
         do {
-            System.out.println("--------------- My map -----------------");
-            playerMap.displayMap();
-            System.out.println("------------- Enemy map ----------------");
-            enemyMap.displayEnemyMap();
             input.process();
-        } while (!input.isFinished() /*|| player.isVictory() || ai.isVictory()*/);
+        } while (!gameProcess.isVictory() /*|| player.isVictory() || ai.isVictory()*/);
     }
 }

@@ -30,7 +30,7 @@ public class GameMap {
         return shipsLeft;
     }
 
-    public static Ship getShip(GameMap map, int y, int x) {
+    public static Ship getShipFromMap(GameMap map, int y, int x) {
         ArrayList<Ship> ships = map.getShips();
         Element elementToCheck = new Element(y, x);
         for (Ship ship : ships) {
@@ -49,6 +49,7 @@ public class GameMap {
     }
 
     public void displayMap() {
+        System.out.println("--------------- My map -----------------");
         char coordinateX = 'A';
         int coordinateY = 0;
 
@@ -72,6 +73,7 @@ public class GameMap {
     }
 
     public void displayEnemyMap() {
+        System.out.println("------------- Enemy map ----------------");
         char coordinateX = 'A';
         int coordinateY = 0;
 
