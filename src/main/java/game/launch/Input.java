@@ -9,8 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Input {
-    /*private boolean finish;*/
-    private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private GameProcess gameProcess;
     private AppLauncher launcher;
     private Pattern firePattern = Pattern.compile("fire [a-j]{1,1}[0-9]{1,1}");
@@ -26,69 +25,44 @@ public class Input {
         this.launcher = launcher;
     }
 
-    /*public void process() {
-        try {
-            gameProcess.getPlayerMap().displayMap();
-            gameProcess.getAiMap().displayEnemyMap();
-            String userInput = reader.readLine().toLowerCase();
-            Matcher fireMatcher = firePattern.matcher(userInput);
-            if (fireMatcher.find()) {
-                fireMatcher.reset();
-                boolean playerFireResult = gameProcess.fire(userInput);
-                while (playerFireResult) {
-                    userInput = reader.readLine().toLowerCase();
-                    if (!(userInput.equalsIgnoreCase("quit"))) {
-                        playerFireResult = gameProcess.fire(userInput);
-                    } else if (userInput.equalsIgnoreCase("quit")) {
-                        finish = true;
-                        return;
-                    }
-                }
-                boolean aiFireResult = gameProcess.aiFire();
-                while (aiFireResult) {
-                    aiFireResult = gameProcess.aiFire();
-                }
-            } else if (userInput.equalsIgnoreCase("quit")) {
-                reader.close();
-                finish = true;
-            } else if (userInput.equalsIgnoreCase("ships")) {
-                System.out.println("Enemy still has: " + GameMap.countHowManyShipsLeft(gameProcess.getAiMap()) + " ships");
-                gameProcess.waitOneSecond();
-            }
-            if (!isFinished()) {
-
-            } else {
-                reader.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     public void process() {
         gameProcess.getPlayerMap().displayMap();
         gameProcess.getAiMap().displayEnemyMap();
-
         userInput = getUserInput();
         fireMatcher = firePattern.matcher(userInput);
-
         if (fireMatcher.matches()) {
             fireMatcher.reset();
             startBattle();
-
         } else if (userInput.equalsIgnoreCase("ships")) {
-            System.out.println("There are" + GameMap.countHowManyShipsLeft(aiMap) + " ships left.");
+            int shipsLeft = GameMap.countHowManyShipsLeft(aiMap);
+            if (shipsLeft == 1) {
+                System.out.println("There is " + GameMap.countHowManyShipsLeft(aiMap) + " ship left.");
+            } else {
+                System.out.println("There are " + GameMap.countHowManyShipsLeft(aiMap) + " ships left.");
+            }
         } else if (userInput.equalsIgnoreCase("start")) {
             playerMap = null;
             aiMap = null;
             launcher = null;
             new AppLauncher().launchRandom();
         } else if (userInput.equalsIgnoreCase("quit")) {
+            closeConnection(reader);
             System.exit(0);
         } else {
             System.out.println("Wrong input");
         }
+    }
 
+    public static BufferedReader getReader() {
+        return reader;
+    }
+
+    private void closeConnection(BufferedReader reader) {
+        try {
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void startBattle() {
@@ -116,8 +90,4 @@ public class Input {
         }
         return userInput;
     }
-
-    /*public boolean isFinished() {
-        return finish;
-    }*/
 }

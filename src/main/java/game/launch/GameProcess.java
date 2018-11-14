@@ -4,6 +4,7 @@ import game.objects.ElementState;
 import game.objects.field.GameMap;
 import game.objects.ships.Ship;
 
+import java.io.BufferedReader;
 import java.util.*;
 
 public class GameProcess {
@@ -87,12 +88,44 @@ public class GameProcess {
         } else {
             System.out.println("No luck this time. You have missed.");
             waitOneSecond();
+            aiFire();
             return false;
         }
     }
 
     public boolean aiFire() {
-        return false;
+        Random rand = new Random();
+        int y = rand.nextInt(10);
+        int x = rand.nextInt(10);
+        Element[][] map = playerMap.getCells();
+        if (map[y][x].getState() == ElementState.CHECKED) {
+            return aiFire();
+        } else {
+            map[y][x].setCellChecked(true);
+            Character yAsCharacter = (char) (y + 65);
+            System.out.println("Computer shot cell " + yAsCharacter + x);
+            waitOneSecond();
+            if (map[y][x].getState() == ElementState.SHIP) {
+                Ship ship = GameMap.getShipFromMap(playerMap, y, x);
+                if (ship != null) {
+                    Element elementInShip = ship.getElementByCoordinates(y, x);
+                    ship.markHit(y, x);
+                    map[y][x].setSymbol('X');
+                } else {
+                    throw new IllegalArgumentException("Something's gone wrong. No ship found at this coordinates: " +
+                            "y = " + y + ", x = " + x);
+                }
+                System.out.println("Computer hits the ship!");
+                waitOneSecond();
+                return true;
+            } else {
+                map[y][x].setSymbol('•');
+                System.out.println("Computer missed");
+                waitOneSecond();
+                fire(CREATE_SOMETHING_WITHOUT_INPUT)
+                return false;
+            }
+        }
     }
 
     public GameMap getPlayerMap() {
@@ -131,6 +164,7 @@ public class GameProcess {
             waitOneSecond();
             return true;
         } else if (userInput.equalsIgnoreCase("quit")) {
+            closeConnection();
             System.exit(0);
         } else if (userInput.equalsIgnoreCase("start")) {
             playerMap = null;
@@ -141,6 +175,10 @@ public class GameProcess {
 
         }
         return false;
+    }
+
+    private BufferedReader closeConnection() {
+        return Input.getReader();
     }
 
     private int getY(String input) {
