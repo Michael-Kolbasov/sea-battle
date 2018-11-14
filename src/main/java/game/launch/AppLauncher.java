@@ -1,20 +1,23 @@
 package game.launch;
-import game.objects.field.GameMap;
 
 public class AppLauncher {
-    private GameMap playerMap;
-    private GameMap aiMap;
-
-    public AppLauncher() {
-        playerMap = new GameMap();
-        aiMap = new GameMap();
-    }
 
     public void launchRandom() {
-        GameProcess gameProcess = new GameProcess(playerMap, aiMap, this);
-        Input input = new Input(gameProcess, this);
-        do {
-            input.process();
-        } while (!gameProcess.isVictory() /*|| player.isVictory() || ai.isVictory()*/);
+        showInfo();
+        GameProcess gameProcess = new GameProcess();
+        gameProcess.process();
+    }
+
+    private void showInfo() {
+        System.out.println("Welcome to the Sea Battle!");
+        System.out.println();
+        System.out.println("Commands possible at any time:");
+        System.out.println("'Menu' - to enter this menu game.");
+        System.out.println("'Quit' - to quit application.");
+        System.out.println();
+        System.out.println("Commands possible at the game:");
+        System.out.println("'Fire A0' - to shoot the cell.");
+        System.out.println("'Ships' - to show amount of enemy's ships that are alive.");
+        System.out.println();
     }
 }
