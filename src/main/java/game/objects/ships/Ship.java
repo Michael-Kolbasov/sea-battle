@@ -82,7 +82,7 @@ public abstract class Ship implements ShipBehavior {
         for (Element element : elements) {
             if (element.equals(elementToMark)) {
                 element.setSymbol('X');
-                element.setState(ElementState.INJURED);
+                element.setState(ElementState.CHECKED);
             }
         }
         hitCount++;

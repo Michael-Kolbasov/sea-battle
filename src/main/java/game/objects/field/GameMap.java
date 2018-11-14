@@ -1,10 +1,8 @@
 package game.objects.field;
-
 import game.objects.ElementState;
 import game.objects.ships.Ship;
 import game.objects.Element;
 import game.objects.ships.ShipFactory;
-
 import java.util.ArrayList;
 
 public class GameMap {
@@ -19,6 +17,17 @@ public class GameMap {
         fillMap();
         createShips();
         putShipsRandomly();
+    }
+
+    public static int countHowManyShipsLeft(GameMap map) {
+        ArrayList<Ship> ships = map.getShips();
+        int shipsLeft = ships.size();
+        for (Ship ship : ships) {
+            if (ship.getHealth() == Ship.Health.DEAD) {
+                shipsLeft--;
+            }
+        }
+        return shipsLeft;
     }
 
     public static Ship getShip(GameMap map, int y, int x) {

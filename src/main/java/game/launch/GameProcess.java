@@ -1,5 +1,4 @@
 package game.launch;
-
 import game.objects.Element;
 import game.objects.ElementState;
 import game.objects.field.GameMap;
@@ -7,13 +6,13 @@ import game.objects.ships.Ship;
 
 import java.util.*;
 
-public class InputListener {
+public class GameProcess {
     private GameMap playerMap;
     private GameMap aiMap;
     private ArrayList<Ship> playerShips;
     private ArrayList<Ship> aiShips;
 
-    public InputListener(GameMap playerMap, GameMap aiMap) {
+    public GameProcess(GameMap playerMap, GameMap aiMap) {
         this.playerMap = playerMap;
         this.aiMap = aiMap;
         this.playerShips = playerMap.getShips();
@@ -30,7 +29,7 @@ public class InputListener {
             if (ship != null) {
                 boolean isShotAlready = false;
                 Element elementInShip = ship.getElementByCoordinates(y, x);
-                if (elementInShip.getState() != ElementState.INJURED) {
+                if (elementInShip.getState() != ElementState.CHECKED) {
                     ship.markHit(y, x);
                     map[y][x].setSymbol('X');
                 } else {
@@ -64,9 +63,8 @@ public class InputListener {
                     return true;
                 }
             } else {
-                System.err.println("Somethings gone wrong. No ship found at this coordinates: y = " + y + " x = " + x);
-                waitOneSecond();
-                return false;
+                throw new IllegalArgumentException("Something's gone wrong. No ship found at this coordinates: " +
+                        "y = " + y + ", x = " + x);
             }
         } else {
             System.out.println("No luck this time. You have missed.");

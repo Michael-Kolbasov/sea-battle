@@ -7,12 +7,12 @@ import java.util.regex.Pattern;
 
 public class Input {
     private boolean finish;
-    private InputListener inputListener;
+    private GameProcess gameProcess;
     private Pattern firePattern = Pattern.compile("[fire ][a-j][0-9]");
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    public Input(InputListener inputListener) {
-        this.inputListener = inputListener;
+    public Input(GameProcess gameProcess) {
+        this.gameProcess = gameProcess;
     }
 
     public void process() {
@@ -21,19 +21,19 @@ public class Input {
             Matcher fireMatcher = firePattern.matcher(userInput);
             if (fireMatcher.find()) {
                 fireMatcher.reset();
-                boolean playerFireResult = inputListener.fire(userInput);
+                boolean playerFireResult = gameProcess.fire(userInput);
                 while (playerFireResult) {
                     userInput = reader.readLine().toLowerCase();
                     if (!(userInput.equalsIgnoreCase("quit"))) {
-                        playerFireResult = inputListener.fire(userInput);
+                        playerFireResult = gameProcess.fire(userInput);
                     } else {
                         finish = true;
                         return;
                     }
                 }
-                boolean aiFireResult = inputListener.aiFire();
+                boolean aiFireResult = gameProcess.aiFire();
                 while (aiFireResult) {
-                    aiFireResult = inputListener.aiFire();
+                    aiFireResult = gameProcess.aiFire();
                 }
             } else if (userInput.equalsIgnoreCase("quit")) {
                 reader.close();

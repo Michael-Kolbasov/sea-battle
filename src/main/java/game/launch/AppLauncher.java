@@ -11,7 +11,7 @@ public class AppLauncher {
     }
 
     public void launchRandom() {
-        InputListener inputListener = new InputListener(playerMap, enemyMap);
+        GameProcess inputListener = new GameProcess(playerMap, enemyMap);
         Input input = new Input(inputListener);
         do {
             System.out.println("--------------- My map -----------------");
