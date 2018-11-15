@@ -6,6 +6,12 @@ import java.util.Random;
 
 public abstract class Ship implements ShipBehavior {
     private static int resetCount = 0;
+    protected Element[] body;
+    protected int length;
+    private Orientation orientation;
+    private Health health = Health.HEALTHY;
+    private boolean orientationLock;
+    private int hitCount;
 
     public enum Health {
         HEALTHY, INJURED, DEAD
@@ -14,13 +20,6 @@ public abstract class Ship implements ShipBehavior {
     private enum Orientation {
         HORIZONTAL, VERTICAL
     }
-
-    protected Element[] body;
-    protected int length;
-    private Orientation orientation;
-    private Health health = Health.HEALTHY;
-    private boolean orientationLock;
-    private int hitCount;
 
     @Override
     public int hashCode() {
@@ -55,24 +54,6 @@ public abstract class Ship implements ShipBehavior {
             }
         }
         return true;
-    }
-
-    public Health getHealth() {
-        return health;
-    }
-
-    public void setHealth(Health health) {
-        this.health = health;
-    }
-
-    public Element getElementByCoordinates(int y, int x) {
-        Element element = new Element(y, x);
-        for (Element elementToFind : getBody()) {
-            if (elementToFind.equals(element)) {
-                return elementToFind;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -151,12 +132,30 @@ public abstract class Ship implements ShipBehavior {
         }
     }
 
+    public Health getHealth() {
+        return health;
+    }
+
+    public Element getElementByCoordinates(int y, int x) {
+        Element element = new Element(y, x);
+        for (Element elementToFind : getBody()) {
+            if (elementToFind.equals(element)) {
+                return elementToFind;
+            }
+        }
+        return null;
+    }
+
     public int getLength() {
         return length;
     }
 
     public Element[] getBody() {
         return body;
+    }
+
+    private void setHealth(Health health) {
+        this.health = health;
     }
 
     private void resetCoordinates() {

@@ -2,8 +2,7 @@ package game.launch;
 import game.objects.field.GameMap;
 import game.players.AbstractPlayer;
 import game.players.Computer;
-import game.players.Player;
-
+import game.players.Human;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,8 +15,20 @@ public class GameProcess {
     private AbstractPlayer enemy;
 
     public GameProcess() {
-        player = new Player(this);
+        player = new Human(this);
         enemy = new Computer(this);
+    }
+
+    public static BufferedReader getReader() {
+        return reader;
+    }
+
+    public static void closeConnection() {
+        try {
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void process() {
@@ -34,6 +45,14 @@ public class GameProcess {
         }
     }
 
+    public GameMap getEnemyMap() {
+        return enemy.getMap();
+    }
+
+    public GameMap getPlayerMap() {
+        return player.getMap();
+    }
+
     private void startBattle() {
         while (!getVictory()) {
             do {
@@ -48,7 +67,6 @@ public class GameProcess {
             } while (player.getResult());
             do {
                 System.out.println("Enemy shoots");
-                System.out.println();
                 enemy.fire();
                 if (checkVictory()) {
                     setVictory(true);
@@ -69,14 +87,6 @@ public class GameProcess {
         return userInput;
     }
 
-    public GameMap getEnemyMap() {
-        return enemy.getMap();
-    }
-
-    public GameMap getPlayerMap() {
-        return player.getMap();
-    }
-
     private boolean checkVictory() {
         return player.getVictory() || enemy.getVictory();
     }
@@ -87,17 +97,5 @@ public class GameProcess {
 
     private void setVictory(boolean victory) {
         this.victory = victory;
-    }
-
-    public static BufferedReader getReader() {
-        return reader;
-    }
-
-    public static void closeConnection() {
-        try {
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

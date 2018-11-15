@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Player extends AbstractPlayer {
+public class Human extends AbstractPlayer {
     private Pattern firePattern = Pattern.compile("fire ([a-j][0-9]){1,1}");
     private Matcher fireMatcher;
     private String userInput;
 
-    public Player(GameProcess gameProcess) {
+    public Human(GameProcess gameProcess) {
         super(gameProcess);
     }
 
@@ -53,6 +53,7 @@ public class Player extends AbstractPlayer {
                         }
                         waitOneSecond();
                         if (checkIsItVictory(enemyMap)) {
+                            System.out.println();
                             System.out.println("Congratulations! You have won!");
                             for (int i = 0; i < map.length; i++) {
                                 for (int j = 0; j < map[i].length; j++) {
@@ -86,6 +87,7 @@ public class Player extends AbstractPlayer {
             }
         } else {
             System.out.println("No luck this time. You have missed.");
+            System.out.println();
             waitOneSecond();
             setResult(false);
         }
@@ -127,5 +129,14 @@ public class Player extends AbstractPlayer {
             checkOtherInput(getUserInput());
         }
         return false;
+    }
+
+    private int getY(String input) {
+        input = input.toUpperCase();
+        return input.charAt(input.length() - 2) - 65;
+    }
+
+    private int getX(String input) {
+        return Character.digit(input.charAt(input.length() - 1), 10);
     }
 }

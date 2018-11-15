@@ -1,6 +1,10 @@
 package game.players;
 import game.launch.GameProcess;
+import game.objects.Element;
 import game.objects.field.GameMap;
+import game.objects.ships.Ship;
+
+import java.util.ArrayList;
 
 public abstract class AbstractPlayer {
     protected GameMap map;
@@ -19,6 +23,18 @@ public abstract class AbstractPlayer {
         map.displayMap();
     }
 
+    public GameMap getMap() {
+        return map;
+    }
+
+    public boolean getVictory() {
+        return victory;
+    }
+
+    public boolean getResult() {
+        return result;
+    }
+
     protected boolean checkIsItVictory(GameMap map) {
         return GameMap.countHowManyShipsLeft(map) == 0;
     }
@@ -31,32 +47,11 @@ public abstract class AbstractPlayer {
         }
     }
 
-    public boolean getResult() {
-        return result;
-    }
-
     protected void setResult(boolean result) {
         this.result = result;
     }
 
     protected void setVictory(boolean victory) {
         this.victory = victory;
-    }
-
-    public GameMap getMap() {
-        return map;
-    }
-
-    public boolean getVictory() {
-        return victory;
-    }
-
-    protected int getY(String input) {
-        input = input.toUpperCase();
-        return input.charAt(input.length() - 2) - 65;
-    }
-
-    protected int getX(String input) {
-        return Character.digit(input.charAt(input.length() - 1), 10);
     }
 }
