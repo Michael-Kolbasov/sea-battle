@@ -55,24 +55,8 @@ public class GameProcess {
 
     private void startBattle() {
         while (!getVictory()) {
-            do {
-                player.displayMap();
-                enemy.displayMap();
-                System.out.println("Your time to shoot");
-                player.fire();
-                if (checkVictory()) {
-                    setVictory(true);
-                    break;
-                }
-            } while (player.getResult());
-            do {
-                System.out.println("Enemy shoots");
-                enemy.fire();
-                if (checkVictory()) {
-                    setVictory(true);
-                    break;
-                }
-            } while (enemy.getResult());
+            playerPerformHit();
+            enemyPerformHit();
         }
         player.displayMap();
         enemy.displayMap();
@@ -85,6 +69,38 @@ public class GameProcess {
             e.printStackTrace();
         }
         return userInput;
+    }
+
+    private void playerPerformHit() {
+        do {
+            if (checkVictory()) {
+                setVictory(true);
+                break;
+            }
+            player.displayMap();
+            enemy.displayMap();
+            System.out.println("Your time to shoot");
+            player.fire();
+            if (checkVictory()) {
+                setVictory(true);
+                break;
+            }
+        } while (player.getResult());
+    }
+
+    private void enemyPerformHit() {
+        do {
+            if (checkVictory()) {
+                setVictory(true);
+                break;
+            }
+            System.out.println("Enemy shoots");
+            enemy.fire();
+            if (checkVictory()) {
+                setVictory(true);
+                break;
+            }
+        } while (enemy.getResult());
     }
 
     private boolean checkVictory() {
