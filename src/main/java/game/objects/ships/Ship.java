@@ -4,6 +4,19 @@ import game.objects.ElementState;
 import game.objects.field.GameMap;
 import java.util.Random;
 
+/**
+ * This abstract class provides variables and method for all concrete Ships classes.
+ * <p>
+ * {@code resetCount} is used to lock the random direction when putting the ship on the map if it happens for more than
+ * 10 times. In case if map will be filled in some awkward way.
+ * {@code body}     is an array of Element class. It ties together ships and map.
+ * {@code @length}  length of a ship. Each concrete Ship class represents its own length.
+ * {@code orientation}  is used to decide how to put the ship on map.
+ * {@code health}   each ship starts being Healthy. Upon hit, it becomes Injured. And when hits are equal to body length
+ * is becomes Dead.
+ * {@code orientationLock} see resetCount.
+ * {@code hitCount} counts the hits for the health state.
+ */
 public abstract class Ship implements ShipBehavior {
     private static int resetCount = 0;
     protected Element[] body;
@@ -56,6 +69,13 @@ public abstract class Ship implements ShipBehavior {
         return true;
     }
 
+    /**
+     * When a Player or a Computer hit on a ship coordinate, this method makes all the work on
+     * changing the ship's state.
+     *
+     * @param y coordinate Y of an Element in ship's body
+     * @param x coordinate X of an Element in ship's body
+     */
     @Override
     public void markHit(int y, int x) {
         Element elementToMark = new Element(y, x);
@@ -88,6 +108,10 @@ public abstract class Ship implements ShipBehavior {
         }
     }
 
+    /**
+     * This method works with the GameMap's method when upon start map put's the ships on itself.
+     * It sets random coordinates for ship's Element body depending on the Orientation.
+     */
     @Override
     public void setRandomCoordinates() {
         Random rand = new Random();

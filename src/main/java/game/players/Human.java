@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class provides logic to a Player for the battle process.
+ * {@code firePattern}   is used to check the input for correctness.
+ */
 public class Human extends AbstractPlayer {
     private Pattern firePattern = Pattern.compile("fire [a-j]{1,1}[0-9]{1,1}");
     private Matcher fireMatcher;
@@ -19,9 +23,12 @@ public class Human extends AbstractPlayer {
         super(gameProcess);
     }
 
+    /**
+     * The starting point of a firing process where the input is being checked.
+     */
     @Override
     public void fire() {
-        while(checkOtherInput(getUserInput())) {
+        while (checkOtherInput(getUserInput())) {
             checkOtherInput(getUserInput());
         }
         int y = getY(userInput);

@@ -1,9 +1,14 @@
 package game.objects;
 import java.util.ArrayList;
 
+/**
+ * This class is the core of all game's objects. Everything consists of it:
+ * Ships have Element[] body with coordinates Y and X.
+ * GameMap is an Element[][] with each cell having the corresponding coordinates.
+ */
 public class Element {
-    private int x;
     private int y;
+    private int x;
     private ElementState state;
     private char symbol;
     private boolean isCellChecked;
@@ -41,22 +46,9 @@ public class Element {
         return true;
     }
 
-    public boolean isCellChecked() {
-        return isCellChecked;
-    }
-
-    public void setCellChecked(boolean cellChecked) {
-        isCellChecked = cellChecked;
-    }
-
-    public char getSurrogate() {
-        return surrogate;
-    }
-
-    public boolean checkEmptiness() {
-        return state != ElementState.SHIP;
-    }
-
+    /**
+     * This method is used when a ship becomes dead to set all surrounded cells to Checked.
+     */
     public ArrayList<Element> getSurround() {
         ArrayList<Element> elements = new ArrayList<>();
         if ((getX() != 0 && getX() != 9) && (getY() != 0 && getY() != 9)) {
@@ -156,6 +148,22 @@ public class Element {
             }
         }
         return elements;
+    }
+
+    public boolean isCellChecked() {
+        return isCellChecked;
+    }
+
+    public void setCellChecked(boolean cellChecked) {
+        isCellChecked = cellChecked;
+    }
+
+    public char getSurrogate() {
+        return surrogate;
+    }
+
+    public boolean checkEmptiness() {
+        return state != ElementState.SHIP;
     }
 
     public char getSymbol() {

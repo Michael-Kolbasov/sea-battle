@@ -1,11 +1,13 @@
 package game.players;
 import game.launch.GameProcess;
-import game.objects.Element;
 import game.objects.field.GameMap;
-import game.objects.ships.Ship;
 
-import java.util.ArrayList;
-
+/**
+ * This abstract class provides common fields and behavior for Computer and Human classes.
+ * <p>
+ * {@code gameProcess} a GameProcess instance ties up a Player and a Computer on a certain map.
+ * {@code result}   is a hit result.
+ */
 public abstract class AbstractPlayer {
     protected GameMap map;
     protected GameProcess gameProcess;

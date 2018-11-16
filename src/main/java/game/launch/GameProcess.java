@@ -7,6 +7,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * GameProcess is a class where the interaction of the Player and the Computer takes place.
+ */
 public class GameProcess {
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private String userInput;
@@ -19,6 +22,10 @@ public class GameProcess {
         enemy = new Computer(this);
     }
 
+    /**
+     * @return a static instance of BufferedReader. It is used in this class to start the game
+     * and in the Player class to perform actions.
+     */
     public static BufferedReader getReader() {
         return reader;
     }
@@ -31,6 +38,9 @@ public class GameProcess {
         }
     }
 
+    /**
+     * This method starts the game.
+     */
     public void process() {
         System.out.println("Enter 'Start' to start the game.");
         userInput = getUserInput();
@@ -45,14 +55,10 @@ public class GameProcess {
         }
     }
 
-    public GameMap getEnemyMap() {
-        return enemy.getMap();
-    }
-
-    public GameMap getPlayerMap() {
-        return player.getMap();
-    }
-
+    /**
+     * The battle becomes!
+     * It is an infinite cycle until someone wins or the "menu" or "quit" options are entered.
+     */
     private void startBattle() {
         while (!getVictory()) {
             playerPerformHit();
@@ -60,6 +66,14 @@ public class GameProcess {
         }
         player.getMap().displayMap();
         enemy.getMap().displayEnemyMap();
+    }
+
+    public GameMap getEnemyMap() {
+        return enemy.getMap();
+    }
+
+    public GameMap getPlayerMap() {
+        return player.getMap();
     }
 
     private String getUserInput() {
@@ -73,14 +87,14 @@ public class GameProcess {
 
     private void playerPerformHit() {
         do {
-            if (checkFinish(player)) {
+            if (checkFinish()) {
                 break;
             }
             player.getMap().displayMap();
             enemy.getMap().displayEnemyMap();
             System.out.println("Your time to shoot");
             player.fire();
-            if (checkFinish(player)) {
+            if (checkFinish()) {
                 break;
             }
         } while (player.getResult());
@@ -88,18 +102,18 @@ public class GameProcess {
 
     private void enemyPerformHit() {
         do {
-            if (checkFinish(enemy)) {
+            if (checkFinish()) {
                 break;
             }
             System.out.println("Enemy shoots");
             enemy.fire();
-            if (checkFinish(enemy)) {
+            if (checkFinish()) {
                 break;
             }
         } while (enemy.getResult());
     }
 
-    private boolean checkFinish(AbstractPlayer player) {
+    private boolean checkFinish() {
         if (checkVictory()) {
             setVictory(true);
             return true;

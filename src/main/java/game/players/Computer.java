@@ -1,14 +1,29 @@
 package game.players;
-
 import game.launch.GameProcess;
 import game.objects.Element;
 import game.objects.ElementState;
 import game.objects.field.GameMap;
 import game.objects.ships.Ship;
-
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Computer class provides AI logic for the battle process.
+ * <p>
+ * {@code hunting}  is set when a first hit on a non-1-deck-ship occurs for remembering the coordinates and changing
+ * hit logic from random to consistent.
+ * {@code directingLock}    happens when {@code hunting} is true and it is a second hit on a non-2-deck-ship.
+ * {@code firstHitY} is a Y coordinate of a first hit.
+ * {@code firstHitX} is a X coordinate of a first hit.
+ * firstHitY and firstHitX help to remember the initial position to perform hunt.
+ * {@code updatedY} is used when searching other ship's cells.
+ * {@code updatedX} same.
+ * {@code direction} is used when hunting to define the direction of a large ship.
+ * {@code listOfDirections} is just of all directions.
+ * <p>
+ * Note: when some direction becomes invalid due to a miss hit or an invalid cell coordinates
+ * (like {-1;0}, for example), this direction becomes removed from the list. It is later refilled.
+ */
 public class Computer extends AbstractPlayer {
     private boolean hunting;
     private boolean directionLock;
@@ -42,6 +57,9 @@ public class Computer extends AbstractPlayer {
         listOfDirections = refillDirections();
     }
 
+    /**
+     * This method defines if a Computer shoots randomly or is hunting a ship.
+     */
     @Override
     public void fire() {
         GameMap enemyMap = gameProcess.getPlayerMap();
@@ -63,6 +81,9 @@ public class Computer extends AbstractPlayer {
         }
     }
 
+    /**
+     * This method performs random hits and or redirects to the performUpdatedHit() if hunting.
+     */
     private void performHit(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] cells) {
         if (cells[y][x].isCellChecked()) {
             fire();
@@ -82,6 +103,30 @@ public class Computer extends AbstractPlayer {
         }
     }
 
+    /**
+     * This method performs a hit when hunting. It defines the new coordinates and checks the result.
+     */
+    private void performUpdatedHit(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] cells) {
+        if (cells[y][x].isCellChecked()) {
+            setUpNewCoordinates(y, x, direction, cells);
+            performUpdatedHit(getUpdatedY(), getUpdatedX(), direction, enemyMap, cells);
+        } else {
+            Character yAsCharacter = (char) (getUpdatedY() + 65);
+            System.out.println("Computer shoots cell " + yAsCharacter + x);
+            cells[y][x].setCellChecked(true);
+            waitOneSecond();
+            if (cells[y][x].getState() == ElementState.SHIP) {
+                madeShot(y, x, direction, enemyMap, cells);
+            } else {
+                madeMiss(y, x, direction, cells);
+            }
+        }
+    }
+
+    /**
+     * This method is used to set random direction if none is applied
+     * and sets new coordinates to hit if direction is set.
+     */
     private void setUpNewCoordinates(int y, int x, ShootDirection direction, Element[][] cells) {
         if (direction == null) {
             direction = getRandomDirection();
@@ -153,24 +198,9 @@ public class Computer extends AbstractPlayer {
         }
     }
 
-
-    private void performUpdatedHit(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] cells) {
-        if (cells[y][x].isCellChecked()) {
-            setUpNewCoordinates(y, x, direction, cells);
-            performUpdatedHit(getUpdatedY(), getUpdatedX(), direction, enemyMap, cells);
-        } else {
-            Character yAsCharacter = (char) (getUpdatedY() + 65);
-            System.out.println("Computer shoots cell " + yAsCharacter + x);
-            cells[y][x].setCellChecked(true);
-            waitOneSecond();
-            if (cells[y][x].getState() == ElementState.SHIP) {
-                madeShot(y, x, direction, enemyMap, cells);
-            } else {
-                madeMiss(y, x, direction, cells);
-            }
-        }
-    }
-
+    /**
+     * This method marks the hit and checks if it is time to hunt or hunt is over.
+     */
     private void madeShot(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] cells) {
         Ship ship = GameMap.getShipFromMap(enemyMap, y, x);
         if (ship == null) {
@@ -208,7 +238,6 @@ public class Computer extends AbstractPlayer {
                 waitOneSecond();
                 if (!isHunting()) {
                     startHunt(y, x);
-            /*надо ли?*/       /* setUpNewCoordinates(y, x, direction, cells);*/
                 } else {
                     setDirectionLock(true);
                     setDirection(direction);
@@ -225,6 +254,9 @@ public class Computer extends AbstractPlayer {
         setUpdatedY(y);
     }
 
+    /**
+     * This method marks a miss and resets Y and X to initial state.
+     */
     private void madeMiss(int y, int x, ShootDirection direction, Element[][] cells) {
         cells[y][x].setCellChecked(true);
         cells[y][x].setSymbol('•');
