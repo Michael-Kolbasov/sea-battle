@@ -30,66 +30,69 @@ public class Human extends AbstractPlayer {
         Element[][] cells = enemyMap.getCells();
         cells[y][x].setCellChecked(true);
         if (cells[y][x].getState() == ElementState.SHIP) {
-            Ship ship = GameMap.getShipFromMap(enemyMap, y, x);
-            if (ship != null) {
-                boolean isShotAlready = false;
-                Element elementInShip = ship.getElementByCoordinates(y, x);
-                if (!elementInShip.isCellChecked()) {
-                    ship.markHit(y, x);
-                    cells[y][x].setSymbol('X');
-                } else {
-                    isShotAlready = true;
-                }
-                if (ship.checkIsDead()) {
-                    if (!isShotAlready) {
-                        System.out.println("Ship has drowned!");
-                        Element[] shipBody = ship.getBody();
-                        for (Element element : shipBody) {
-                            ArrayList<Element> surround = element.getSurround();
-                            for (Element elements : surround) {
-                                cells[elements.getY()][elements.getX()].setCellChecked(true);
-                            }
-                        }
-                        waitOneSecond();
-                        if (checkIsItVictory(enemyMap)) {
-                            System.out.println();
-                            System.out.println("Congratulations! You have won!");
-                            for (int i = 0; i < cells.length; i++) {
-                                for (int j = 0; j < cells[i].length; j++) {
-                                    cells[i][j].setCellChecked(true);
-                                }
-                            }
-                            waitOneSecond();
-                            setVictory(true);
-                            setResult(false);
-                        } else {
-                            setResult(true);
-                        }
-                    } else {
-                        System.out.println("Ship has drowned! By the way, you've already shot this cell.");
-                        waitOneSecond();
-                        setResult(false);
+            madeShot(y, x, enemyMap, cells);
+        } else {
+            madeMiss();
+        }
+    }
+
+    private void madeShot(int y, int x, GameMap enemyMap, Element[][] cells) {
+        Ship ship = GameMap.getShipFromMap(enemyMap, y, x);
+        boolean isShotAlready = false;
+        Element elementInShip = ship.getElementByCoordinates(y, x);
+        if (!elementInShip.isCellChecked()) {
+            ship.markHit(y, x);
+            cells[y][x].setSymbol('X');
+        } else {
+            isShotAlready = true;
+        }
+        if (ship.checkIsDead()) {
+            if (!isShotAlready) {
+                System.out.println("Ship has drowned!");
+                Element[] shipBody = ship.getBody();
+                for (Element element : shipBody) {
+                    ArrayList<Element> surround = element.getSurround();
+                    for (Element elements : surround) {
+                        cells[elements.getY()][elements.getX()].setCellChecked(true);
                     }
-                } else {
-                    if (!isShotAlready) {
-                        System.out.println("It's a shot! Ship is injured.");
-                        setResult(true);
-                    } else {
-                        System.out.println("It's a shot! Ship is injured. By the way, you've already shot this cell.");
-                        setResult(false);
+                }
+                waitOneSecond();
+                if (checkIsItVictory(enemyMap)) {
+                    System.out.println();
+                    System.out.println("Congratulations! You have won!");
+                    for (int i = 0; i < cells.length; i++) {
+                        for (int j = 0; j < cells[i].length; j++) {
+                            cells[i][j].setCellChecked(true);
+                        }
                     }
                     waitOneSecond();
+                    setVictory(true);
+                    setResult(false);
+                } else {
+                    setResult(true);
                 }
             } else {
-                throw new IllegalArgumentException("Something's gone wrong. No ship found at this coordinates: " +
-                        "y = " + y + ", x = " + x);
+                System.out.println("Ship has drowned! By the way, you've already shot this cell.");
+                waitOneSecond();
+                setResult(false);
             }
         } else {
-            System.out.println("No luck this time. You have missed.");
-            System.out.println();
+            if (!isShotAlready) {
+                System.out.println("It's a shot! Ship is injured.");
+                setResult(true);
+            } else {
+                System.out.println("It's a shot! Ship is injured. By the way, you've already shot this cell.");
+                setResult(false);
+            }
             waitOneSecond();
-            setResult(false);
         }
+    }
+
+    private void madeMiss() {
+        System.out.println("No luck this time. You have missed.");
+        System.out.println();
+        waitOneSecond();
+        setResult(false);
     }
 
     private String getUserInput() {
