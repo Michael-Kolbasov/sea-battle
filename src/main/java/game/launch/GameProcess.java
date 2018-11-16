@@ -58,8 +58,8 @@ public class GameProcess {
             playerPerformHit();
             enemyPerformHit();
         }
-        player.displayMap();
-        enemy.displayMap();
+        player.getMap().displayMap();
+        enemy.getMap().displayEnemyMap();
     }
 
     private String getUserInput() {
@@ -73,16 +73,14 @@ public class GameProcess {
 
     private void playerPerformHit() {
         do {
-            if (checkVictory()) {
-                setVictory(true);
+            if (checkFinish(player)) {
                 break;
             }
-            player.displayMap();
-            enemy.displayMap();
+            player.getMap().displayMap();
+            enemy.getMap().displayEnemyMap();
             System.out.println("Your time to shoot");
             player.fire();
-            if (checkVictory()) {
-                setVictory(true);
+            if (checkFinish(player)) {
                 break;
             }
         } while (player.getResult());
@@ -90,17 +88,24 @@ public class GameProcess {
 
     private void enemyPerformHit() {
         do {
-            if (checkVictory()) {
-                setVictory(true);
+            if (checkFinish(enemy)) {
                 break;
             }
             System.out.println("Enemy shoots");
             enemy.fire();
-            if (checkVictory()) {
-                setVictory(true);
+            if (checkFinish(enemy)) {
                 break;
             }
         } while (enemy.getResult());
+    }
+
+    private boolean checkFinish(AbstractPlayer player) {
+        if (checkVictory()) {
+            setVictory(true);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private boolean checkVictory() {

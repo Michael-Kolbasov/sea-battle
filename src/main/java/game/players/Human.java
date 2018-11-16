@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Human extends AbstractPlayer {
-    private Pattern firePattern = Pattern.compile("fire ([a-j][0-9]){1,1}");
+    private Pattern firePattern = Pattern.compile("fire [a-j]{1,1}[0-9]{1,1}");
     private Matcher fireMatcher;
     private String userInput;
 
@@ -21,43 +21,42 @@ public class Human extends AbstractPlayer {
 
     @Override
     public void fire() {
-        userInput = getUserInput();
-        if (checkOtherInput(userInput)) {
-            userInput = getUserInput();
+        while(checkOtherInput(getUserInput())) {
+            checkOtherInput(getUserInput());
         }
         int y = getY(userInput);
         int x = getX(userInput);
         GameMap enemyMap = gameProcess.getEnemyMap();
-        Element[][] map = enemyMap.getCells();
-        map[y][x].setCellChecked(true);
-        if (map[y][x].getState() == ElementState.SHIP) {
+        Element[][] cells = enemyMap.getCells();
+        cells[y][x].setCellChecked(true);
+        if (cells[y][x].getState() == ElementState.SHIP) {
             Ship ship = GameMap.getShipFromMap(enemyMap, y, x);
             if (ship != null) {
                 boolean isShotAlready = false;
                 Element elementInShip = ship.getElementByCoordinates(y, x);
-                if (elementInShip.getState() != ElementState.CHECKED) {
+                if (!elementInShip.isCellChecked()) {
                     ship.markHit(y, x);
-                    map[y][x].setSymbol('X');
+                    cells[y][x].setSymbol('X');
                 } else {
                     isShotAlready = true;
                 }
-                if (ship.checkState()) {
+                if (ship.checkIsDead()) {
                     if (!isShotAlready) {
                         System.out.println("Ship has drowned!");
                         Element[] shipBody = ship.getBody();
                         for (Element element : shipBody) {
                             ArrayList<Element> surround = element.getSurround();
                             for (Element elements : surround) {
-                                map[elements.getY()][elements.getX()].setCellChecked(true);
+                                cells[elements.getY()][elements.getX()].setCellChecked(true);
                             }
                         }
                         waitOneSecond();
                         if (checkIsItVictory(enemyMap)) {
                             System.out.println();
                             System.out.println("Congratulations! You have won!");
-                            for (int i = 0; i < map.length; i++) {
-                                for (int j = 0; j < map[i].length; j++) {
-                                    map[i][j].setCellChecked(true);
+                            for (int i = 0; i < cells.length; i++) {
+                                for (int j = 0; j < cells[i].length; j++) {
+                                    cells[i][j].setCellChecked(true);
                                 }
                             }
                             waitOneSecond();
@@ -94,7 +93,6 @@ public class Human extends AbstractPlayer {
     }
 
     private String getUserInput() {
-        String userInput = "";
         try {
             userInput = GameProcess.getReader().readLine();
         } catch (IOException e) {

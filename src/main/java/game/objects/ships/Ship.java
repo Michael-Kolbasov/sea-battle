@@ -63,11 +63,11 @@ public abstract class Ship implements ShipBehavior {
         for (Element element : elements) {
             if (element.equals(elementToMark)) {
                 element.setSymbol('X');
-                element.setState(ElementState.CHECKED);
+                element.setCellChecked(true);
             }
         }
         hitCount++;
-        if (checkState()) {
+        if (checkIsDead()) {
             setHealth(Health.DEAD);
         } else {
             setHealth(Health.INJURED);
@@ -75,7 +75,7 @@ public abstract class Ship implements ShipBehavior {
     }
 
     @Override
-    public boolean checkState() {
+    public boolean checkIsDead() {
         return hitCount >= body.length;
     }
 

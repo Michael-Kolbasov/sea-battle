@@ -19,10 +19,6 @@ public abstract class AbstractPlayer {
 
     public abstract void fire();
 
-    public void displayMap() {
-        map.displayMap();
-    }
-
     public GameMap getMap() {
         return map;
     }

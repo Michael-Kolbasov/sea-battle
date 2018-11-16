@@ -2,7 +2,7 @@ package game.objects.ships;
 
 public interface ShipBehavior {
     void markHit(int y, int x);
-    boolean checkState();
+    boolean checkIsDead();
     void setRandomCoordinates();
     void fillBody();
 }

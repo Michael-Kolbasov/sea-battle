@@ -1,229 +1,220 @@
 package game.players;
-
 import game.launch.GameProcess;
 import game.objects.Element;
 import game.objects.ElementState;
 import game.objects.field.GameMap;
 import game.objects.ships.Ship;
-
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Computer extends AbstractPlayer {
-    private boolean rememberCell;
-    private int initial_yToRemember;
-    private int initial_xToRemember;
-    private boolean huntStarted;
-    private int huntingX;
-    private int huntingY;
+    private boolean firstHit;
+    private boolean directionLock;
+    private int firstHitY;
+    private int firstHitX;
+    private int updatedY;
+    private int updatedX;
     private ShootDirection direction;
-    private ArrayList<ShootDirection> shootDirections;
+    private ArrayList<ShootDirection> listOfDirections;
 
     private enum ShootDirection {
-        UP {
-            public ShootDirection opposite() {
-                return ShootDirection.DOWN;
-            }
-        },
-        DOWN {
-            public ShootDirection opposite() {
-                return ShootDirection.UP;
-            }
-        },
-        LEFT {
-            public ShootDirection opposite() {
-                return ShootDirection.RIGHT;
-            }
-        },
-        RIGHT {
-            public ShootDirection opposite() {
-                return ShootDirection.LEFT;
+        UP, DOWN, LEFT, RIGHT;
+
+        public ShootDirection revert() {
+            if (this == UP) {
+                return DOWN;
+            } else if (this == DOWN) {
+                return UP;
+            } else if (this == LEFT) {
+                return RIGHT;
+            } else if (this == RIGHT) {
+                return LEFT;
+            } else {
+                return null;
             }
         }
     }
 
     public Computer(GameProcess gameProcess) {
         super(gameProcess);
-        shootDirections = refillDirections();
-    }
-
-    @Override
-    public void displayMap() {
-        map.displayEnemyMap();
+        listOfDirections = refillDirections();
     }
 
     @Override
     public void fire() {
         GameMap enemyMap = gameProcess.getPlayerMap();
-        Element[][] map = enemyMap.getCells();
-        if (isCellRemembered()) {
-            int y = get_yToRemember();
-            int x = get_xToRemember();
-            shootDirections = getShootDirections();
-            direction = getRandomDirection();
-            setNewCoordinates(y, x, direction, enemyMap, map);
+        Element[][] cells = enemyMap.getCells();
+        if (isFirstHit()) {
+            if (isDirectionLocked()) {
+                setUpNewCoordinates(getUpdatedY(), getUpdatedX(), direction, enemyMap, cells);
+                performHit(getUpdatedY(), getUpdatedX(), direction, enemyMap, cells);
+            } else {
+                performUpdatedHit(getUpdatedY(), getUpdatedX(), enemyMap, cells);
+            }
         } else {
             Random rand = new Random();
             int y = rand.nextInt(10);
             int x = rand.nextInt(10);
-            performHit(y, x, null, enemyMap, map);
+            performHit(y, x, direction, enemyMap, cells);
         }
     }
 
-    private void setNewCoordinates(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] map) {
+    private void performHit(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] cells) {
+        if (cells[y][x].isCellChecked()) {
+            fire();
+        } else {
+            if (direction == null) {
+                Character yAsCharacter = (char) (y + 65);
+                System.out.println("Computer shoots cell " + yAsCharacter + x);
+                if (cells[y][x].getState() == ElementState.SHIP) {
+                    madeShot(y, x, enemyMap, cells);
+                } else {
+                    madeMiss(y, x, cells);
+                }
+            } else {
+                setUpNewCoordinates(getUpdatedY(), getUpdatedX(), direction, enemyMap, cells);
+                performUpdatedHit(getUpdatedY(), getUpdatedX(), enemyMap, cells);
+            }
+        }
+    }
+
+    private void setUpNewCoordinates(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] cells) {
+        if (direction == null) {
+            direction = getRandomDirection();
+        }
         if (direction == ShootDirection.LEFT) {
             if (x == 0) {
-                shootDirections.remove(ShootDirection.LEFT);
-                fire();
+                listOfDirections.remove(ShootDirection.LEFT);
+                direction = getRandomDirection();
+                setUpNewCoordinates(y, x, direction, enemyMap, cells);
             } else {
-                x -= 1;
-                performHit(y, x, direction, enemyMap, map);
+                setUpdatedX(x - 1);
             }
         } else if (direction == ShootDirection.RIGHT) {
             if (x == 9) {
-                shootDirections.remove(ShootDirection.RIGHT);
-                fire();
+                listOfDirections.remove(ShootDirection.RIGHT);
+                direction = getRandomDirection();
+                setUpNewCoordinates(y, x, direction, enemyMap, cells);
             } else {
-                x += 1;
-                performHit(y, x, direction, enemyMap, map);
+                setUpdatedX(x + 1);
             }
         } else if (direction == ShootDirection.UP) {
             if (y == 0) {
-                shootDirections.remove(ShootDirection.UP);
-                fire();
+                listOfDirections.remove(ShootDirection.UP);
+                direction = getRandomDirection();
+                setUpNewCoordinates(y, x, direction, enemyMap, cells);
             } else {
-                y -= 1;
-                performHit(y, x, direction, enemyMap, map);
+                setUpdatedY(y - 1);
             }
         } else if (direction == ShootDirection.DOWN) {
             if (y == 9) {
-                shootDirections.remove(ShootDirection.DOWN);
-                fire();
+                listOfDirections.remove(ShootDirection.DOWN);
+                direction = getRandomDirection();
+                setUpNewCoordinates(y, x, direction, enemyMap, cells);
             } else {
-                y += 1;
-                performHit(y, x, direction, enemyMap, map);
+                setUpdatedY(y + 1);
             }
         }
     }
 
-    /*
-     shootDirections.remove(direction.opposite());
-     */
-
-    private void performHit(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] map) {
-        if (map[y][x].getState() == ElementState.CHECKED) {
-            if (direction != null) {
-                shootDirections.remove(direction);
-                fire ();
-            } else {
-                fire();
-            }
+    private void performUpdatedHit(int y, int x, GameMap enemyMap, Element[][] cells) {
+        if (cells[y][x].isCellChecked()) {
+            setUpNewCoordinates(y, x, direction, enemyMap, cells);
+            performUpdatedHit(getUpdatedY(), getUpdatedX(), enemyMap, cells);
         } else {
-            Character yAsCharacter = (char) (y + 65);
+            Character yAsCharacter = (char) (getUpdatedY() + 65);
             System.out.println("Computer shoots cell " + yAsCharacter + x);
-            map[y][x].setCellChecked(true);
+            cells[y][x].setCellChecked(true);
             waitOneSecond();
-            if (map[y][x].getState() == ElementState.SHIP) {
-                Ship ship = GameMap.getShipFromMap(enemyMap, y, x);
-                if (ship != null) {
-                    boolean isShotAlready = false;
-                    Element elementInShip = ship.getElementByCoordinates(y, x);
-                    if (elementInShip.getState() != ElementState.CHECKED) {
-                        ship.markHit(y, x);
-                        map[y][x].setSymbol('X');
-                    } else {
-                        isShotAlready = true;
-                    }
-                    if (ship.checkState()) {
-                        if (!isShotAlready) {
-                            System.out.println("Your ship has drowned.");
-                            setRememberCell(false);
-                            shootDirections = refillDirections();
-                            Element[] shipBody = ship.getBody();
-                            for (Element element : shipBody) {
-                                ArrayList<Element> surround = element.getSurround();
-                                for (Element elements : surround) {
-                                    map[elements.getY()][elements.getX()].setCellChecked(true);
-                                }
-                            }
-                            waitOneSecond();
-                            if (checkIsItVictory(enemyMap)) {
-                                System.out.println();
-                                System.out.println("It's over! Computer has won.");
-                                for (int i = 0; i < map.length; i++) {
-                                    for (int j = 0; j < map[i].length; j++) {
-                                        map[i][j].setCellChecked(true);
-                                    }
-                                }
-                                waitOneSecond();
-                                setVictory(true);
-                                setResult(false);
-                            } else {
-                                setResult(true);
-                            }
-                        } else {
-                            System.out.println("Ship has drowned! Oh, it was already drowned, computer just wants to be sure.");
-                            setRememberCell(false);
-                            shootDirections = refillDirections();
-                            waitOneSecond();
-                            setResult(false);
-                        }
-                    } else {
-                        if (!isShotAlready) {
-                            System.out.println("It's a shot! Ship is injured.");
-                            setRememberCell(true);
-                            setInitial_yToRemember(y);
-                            setInitial_xToRemember(x);
-                            setResult(true);
-                        } else {
-                            System.out.println("It's a shot! Ship is injured. Oh, and computer already shot this cell.");
-                            setResult(false);
-                        }
-                        waitOneSecond();
-                    }
+            if (cells[y][x].getState() == ElementState.SHIP) {
+                madeShot(y, x, enemyMap, cells);
+            } else {
+                madeMiss(y, x, cells);
+            }
+        }
+    }
+
+    private void madeShot(int y, int x, GameMap enemyMap, Element[][] cells) {
+        Ship ship = GameMap.getShipFromMap(enemyMap, y, x);
+        if (ship == null) {
+            madeMiss(y, x, cells);
+            this.direction = direction.revert();
+            setUpdatedY(getFirstHitY());
+            setUpdatedX(getFirstHitX());
+        } else {
+            ship.markHit(y, x);
+            cells[y][x].setCellChecked(true);
+            cells[y][x].setSymbol('X');
+            if (ship.checkIsDead()) {
+                this.direction = null;
+                setFirstHit(false);
+                setDirectionLock(false);
+                listOfDirections = refillDirections();
+                System.out.println("Your ship has drowned.");
+                markSurroundChecked(ship, cells);
+                waitOneSecond();
+                if (checkIsItVictory(enemyMap)) {
+                    System.out.println();
+                    System.out.println("It's over! Computer has won.");
+                    markMapChecked(cells);
+                    waitOneSecond();
+                    setVictory(true);
+                    setResult(false);
                 } else {
-                    throw new IllegalArgumentException("Something's gone wrong. No ship found at this coordinates: " +
-                            "y = " + y + ", x = " + x);
+                    setResult(true);
                 }
             } else {
-                map[y][x].setSymbol('•');
-                System.out.println("Computer missed");
-                waitOneSecond();
-                setResult(false);
+                System.out.println("Computer hits the ship!");
+                setResult(true);
+                if (!isFirstHit()) {
+                    startHunt(y, x);
+                    setUpNewCoordinates(y, x, direction, enemyMap, cells);
+                } else {
+                    setDirectionLock(true);
+                }
             }
         }
     }
 
-    private boolean isCellRemembered() {
-        return rememberCell;
+    private void startHunt(int y, int x) {
+        setFirstHit(true);
+        setFirstHitX(x);
+        setFirstHitY(y);
+        setUpdatedX(x);
+        setUpdatedY(y);
     }
 
-    private void setRememberCell(boolean rememberCell) {
-        this.rememberCell = rememberCell;
+    private void madeMiss(int y, int x, Element[][] cells) {
+        cells[y][x].setCellChecked(true);
+        cells[y][x].setSymbol('•');
+        System.out.println("Computer missed");
+        if (isFirstHit()) {
+            setUpdatedY(getFirstHitY());
+            setUpdatedX(getFirstHitX());
+        }
+        if (isDirectionLocked()) {
+            this.direction = direction.revert();
+        }
+        waitOneSecond();
+        setResult(false);
     }
 
-    private int get_yToRemember() {
-        return initial_yToRemember;
+    private void markMapChecked(Element[][] cells) {
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+                cells[i][j].setCellChecked(true);
+            }
+        }
     }
 
-    private int get_xToRemember() {
-        return initial_xToRemember;
-    }
-
-    private void setInitial_yToRemember(int yToRemember) {
-        this.initial_yToRemember = yToRemember;
-    }
-
-    private void setInitial_xToRemember(int xToRemember) {
-        this.initial_xToRemember = xToRemember;
-    }
-
-    private ArrayList<ShootDirection> getShootDirections() {
-        return shootDirections;
-    }
-
-    private ShootDirection getRandomDirection() {
-        return shootDirections.get((int) (Math.random() * shootDirections.size()));
+    private void markSurroundChecked(Ship ship, Element[][] cells) {
+        Element[] shipBody = ship.getBody();
+        for (Element element : shipBody) {
+            ArrayList<Element> surround = element.getSurround();
+            for (Element elements : surround) {
+                cells[elements.getY()][elements.getX()].setCellChecked(true);
+            }
+        }
     }
 
     private ArrayList<ShootDirection> refillDirections() {
@@ -233,5 +224,57 @@ public class Computer extends AbstractPlayer {
         directions.add(ShootDirection.LEFT);
         directions.add(ShootDirection.RIGHT);
         return directions;
+    }
+
+    private ShootDirection getRandomDirection() {
+        return listOfDirections.get((int) (Math.random() * listOfDirections.size() - 1));
+    }
+
+    private boolean isFirstHit() {
+        return firstHit;
+    }
+
+    private void setFirstHit(boolean firstHit) {
+        this.firstHit = firstHit;
+    }
+
+    private int getFirstHitY() {
+        return firstHitY;
+    }
+
+    private int getFirstHitX() {
+        return firstHitX;
+    }
+
+    private void setFirstHitY(int firstHitY) {
+        this.firstHitY = firstHitY;
+    }
+
+    private void setFirstHitX(int firstHitX) {
+        this.firstHitX = firstHitX;
+    }
+
+    private int getUpdatedY() {
+        return updatedY;
+    }
+
+    private void setUpdatedY(int updatedY) {
+        this.updatedY = updatedY;
+    }
+
+    private int getUpdatedX() {
+        return updatedX;
+    }
+
+    private void setUpdatedX(int updatedX) {
+        this.updatedX = updatedX;
+    }
+
+    private boolean isDirectionLocked() {
+        return directionLock;
+    }
+
+    private void setDirectionLock(boolean directionLock) {
+        this.directionLock = directionLock;
     }
 }
