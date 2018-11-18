@@ -1,2 +1,2 @@
 # sea-battle
-A console classic sea battle game
+A classic console sea battle game. 2D version.
