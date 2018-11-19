@@ -82,7 +82,7 @@ public class Computer extends AbstractPlayer {
     }
 
     /**
-     * This method performs random hits and or redirects to the performUpdatedHit() if hunting.
+     * This method performs random hits or redirects to the performUpdatedHit() if hunting.
      */
     private void performHit(int y, int x, ShootDirection direction, GameMap enemyMap, Element[][] cells) {
         if (cells[y][x].isCellChecked()) {
@@ -259,8 +259,9 @@ public class Computer extends AbstractPlayer {
      */
     private void madeMiss(int y, int x, ShootDirection direction, Element[][] cells) {
         cells[y][x].setCellChecked(true);
-        cells[y][x].setSymbol('▪');
+        cells[y][x].setSymbol('*');
         System.out.println("Computer missed");
+        System.out.println();
         if (isHunting()) {
             setUpdatedY(getFirstHitY());
             setUpdatedX(getFirstHitX());
