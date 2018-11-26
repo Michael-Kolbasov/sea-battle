@@ -1,7 +1,7 @@
 package game.launch;
 import game.objects.field.GameMap;
-import game.players.AbstractPlayer;
 import game.players.Computer;
+import game.players.AbstractPlayer;
 import game.players.Human;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,6 +38,14 @@ public class GameProcess {
         }
     }
 
+    public GameMap getEnemyMap() {
+        return enemy.getMap();
+    }
+
+    public GameMap getPlayerMap() {
+        return player.getMap();
+    }
+
     /**
      * This method starts the game.
      */
@@ -64,25 +72,9 @@ public class GameProcess {
             playerPerformHit();
             enemyPerformHit();
         }
+        closeConnection();
         player.getMap().displayMap();
         enemy.getMap().displayEnemyMap();
-    }
-
-    public GameMap getEnemyMap() {
-        return enemy.getMap();
-    }
-
-    public GameMap getPlayerMap() {
-        return player.getMap();
-    }
-
-    private String getUserInput() {
-        try {
-            userInput = reader.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return userInput;
     }
 
     private void playerPerformHit() {
@@ -111,6 +103,15 @@ public class GameProcess {
                 break;
             }
         } while (enemy.getResult());
+    }
+
+    private String getUserInput() {
+        try {
+            userInput = reader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return userInput;
     }
 
     private boolean checkFinish() {

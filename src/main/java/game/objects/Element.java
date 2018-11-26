@@ -2,9 +2,16 @@ package game.objects;
 import java.util.ArrayList;
 
 /**
- * This class is the core of all game's objects. Everything consists of it:
+ * This class is the core of all games objects. Everything consists of it:
  * Ships have Element[] body with coordinates Y and X.
  * GameMap is an Element[][] with each cell having the corresponding coordinates.
+ *
+ * {@code y}    elements' Y coordinate
+ * {@code X}    elements' X coordinate
+ * {@code state}    elements' state (WATER, BORDER, SHIP)
+ * {@code symbol}   elements' symbol representation on the map
+ * {@code isCellChecked}    a flag that helps to determinate if player has already checked this cell
+ * {@code surrogate}    elements' symbol for showing enemy map while cell hasn't been checked
  */
 public class Element {
     private int y;
@@ -52,104 +59,65 @@ public class Element {
     }
 
     /**
-     * This method is used when a ship becomes dead to set all surrounded cells to Checked.
+     *  This method is used when a ship becomes dead to set all surrounding cells to Checked or after putting ships
+     * randomly to set their surrounding cells to Border.
      */
     public ArrayList<Element> getSurround() {
         ArrayList<Element> elements = new ArrayList<>();
         if ((getX() != 0 && getX() != 9) && (getY() != 0 && getY() != 9)) {
-            Element e1 = new Element(getY() + 1, getX() + 1);
-            Element e2 = new Element(getY() + 1, getX());
-            Element e3 = new Element(getY() + 1, getX() - 1);
-            Element e4 = new Element(getY(), getX() - 1);
-            Element e5 = new Element(getY() - 1, getX() - 1);
-            Element e6 = new Element(getY() - 1, getX());
-            Element e7 = new Element(getY() - 1, getX() + 1);
-            Element e8 = new Element(getY(), getX() + 1);
-            elements.add(e1);
-            elements.add(e2);
-            elements.add(e3);
-            elements.add(e4);
-            elements.add(e5);
-            elements.add(e6);
-            elements.add(e7);
-            elements.add(e8);
+            elements.add(new Element(getY() + 1, getX() + 1));
+            elements.add(new Element(getY() + 1, getX()));
+            elements.add(new Element(getY() + 1, getX() - 1));
+            elements.add(new Element(getY(), getX() - 1));
+            elements.add(new Element(getY() - 1, getX() - 1));
+            elements.add(new Element(getY() - 1, getX()));
+            elements.add(new Element(getY() - 1, getX() + 1));
+            elements.add(new Element(getY(), getX() + 1));
         } else if (y == 0) {
             if (x == 0) {
-                Element e1 = new Element(getY(), getX() + 1);
-                Element e2 = new Element(getY() + 1, getX() + 1);
-                Element e3 = new Element(getY() + 1, getX());
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
+                elements.add(new Element(getY(), getX() + 1));
+                elements.add(new Element(getY() + 1, getX() + 1));
+                elements.add(new Element(getY() + 1, getX()));
             } else if (x == 9) {
-                Element e1 = new Element(getY() + 1, getX());
-                Element e2 = new Element(getY() + 1, getX() - 1);
-                Element e3 = new Element(getY(), getX() - 1);
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
+                elements.add(new Element(getY() + 1, getX()));
+                elements.add(new Element(getY() + 1, getX() - 1));
+                elements.add(new Element(getY(), getX() - 1));
             } else {
-                Element e1 = new Element(getY(), getX() - 1);
-                Element e2 = new Element(getY() + 1, getX() - 1);
-                Element e3 = new Element(getY() + 1, getX());
-                Element e4 = new Element(getY() + 1, getX() + 1);
-                Element e5 = new Element(getY(), getX() + 1);
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
-                elements.add(e4);
-                elements.add(e5);
+                elements.add(new Element(getY(), getX() - 1));
+                elements.add(new Element(getY() + 1, getX() - 1));
+                elements.add(new Element(getY() + 1, getX()));
+                elements.add(new Element(getY() + 1, getX() + 1));
+                elements.add(new Element(getY(), getX() + 1));
             }
         } else if (y == 9) {
             if (x == 0) {
-                Element e1 = new Element(getY() - 1, getX());
-                Element e2 = new Element(getY() - 1, getX() + 1);
-                Element e3 = new Element(getY(), getX() + 1);
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
+                elements.add(new Element(getY() - 1, getX()));
+                elements.add(new Element(getY() - 1, getX() + 1));
+                elements.add(new Element(getY(), getX() + 1));
             } else if (x == 9) {
-                Element e1 = new Element(getY() - 1, getX());
-                Element e2 = new Element(getY() - 1, getX() - 1);
-                Element e3 = new Element(getY(), getX() - 1);
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
+                elements.add(new Element(getY() - 1, getX()));
+                elements.add(new Element(getY() - 1, getX() - 1));
+                elements.add(new Element(getY(), getX() - 1));
             } else {
-                Element e1 = new Element(getY(), getX() - 1);
-                Element e2 = new Element(getY() - 1, getX() - 1);
-                Element e3 = new Element(getY() - 1, getX());
-                Element e4 = new Element(getY() - 1, getX() + 1);
-                Element e5 = new Element(getY(), getX() + 1);
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
-                elements.add(e4);
-                elements.add(e5);
+                elements.add(new Element(getY(), getX() - 1));
+                elements.add(new Element(getY() - 1, getX() - 1));
+                elements.add(new Element(getY() - 1, getX()));
+                elements.add(new Element(getY() - 1, getX() + 1));
+                elements.add(new Element(getY(), getX() + 1));
             }
         } else if (y > 0 && y < 9) {
             if (x == 0) {
-                Element e1 = new Element(getY() - 1, getX());
-                Element e2 = new Element(getY() - 1, getX() + 1);
-                Element e3 = new Element(getY(), getX() + 1);
-                Element e4 = new Element(getY() + 1, getX() + 1);
-                Element e5 = new Element(getY() + 1, getX());
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
-                elements.add(e4);
-                elements.add(e5);
+                elements.add(new Element(getY() - 1, getX()));
+                elements.add(new Element(getY() - 1, getX() + 1));
+                elements.add(new Element(getY(), getX() + 1));
+                elements.add(new Element(getY() + 1, getX() + 1));
+                elements.add(new Element(getY() + 1, getX()));
             } else if (x == 9) {
-                Element e1 = new Element(getY() - 1, getX());
-                Element e2 = new Element(getY() - 1, getX() - 1);
-                Element e3 = new Element(getY(), getX() - 1);
-                Element e4 = new Element(getY() + 1, getX() - 1);
-                Element e5 = new Element(getY() + 1, getX());
-                elements.add(e1);
-                elements.add(e2);
-                elements.add(e3);
-                elements.add(e4);
-                elements.add(e5);
+                elements.add(new Element(getY() - 1, getX()));
+                elements.add(new Element(getY() - 1, getX() - 1));
+                elements.add(new Element(getY(), getX() - 1));
+                elements.add(new Element(getY() + 1, getX() - 1));
+                elements.add(new Element(getY() + 1, getX()));
             }
         }
         return elements;
